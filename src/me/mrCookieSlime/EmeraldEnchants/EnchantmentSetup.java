@@ -29,6 +29,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -370,6 +371,18 @@ public class EnchantmentSetup {
 				@Override
 				void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e.getCause() == DamageCause.WITHER) e.setDamage(e.getDamage() / (level + 1));
+				}
+			}
+		);
+		
+		registry.registerEnchantment("ENDER_PEARL_PROTECTION", new ItemStack(Material.ENDER_PEARL), 2, Arrays.asList(ApplicableItem.BOOTS, ApplicableItem.LEGGINGS, ApplicableItem.CHESTPLATE, ApplicableItem.HELMET), Arrays.asList("Protection against Damage taken", "from throwing an Enderpearl"), 
+			new DamageAction() {
+
+				@Override
+				void onDamage(int level, Player p, EntityDamageEvent e) {
+					if (((EntityDamageByEntityEvent) e).getDamager() instanceof EnderPearl) {
+						e.setDamage(e.getDamage() / (level + 1));
+					}
 				}
 			}
 		);
