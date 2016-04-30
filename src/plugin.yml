@@ -1,0 +1,21 @@
+name: EmeraldEnchants
+version: 2.0
+author: mrCookieSlime
+website: http://mrcookieslime.github.io/
+
+main: me.mrCookieSlime.EmeraldEnchants.EmeraldEnchants
+
+softdepend: [CS-CoreLib, PrisonUtils, Slimefun]
+
+commands:
+  ee:
+    description: EmeraldEnchants Base Command
+    usage: /ee
+
+permission:
+  EmeraldEnchants.command.enchant:
+    default: op
+    description: Allows you to do /ee enchant
+  EmeraldEnchants.command.list:
+    default: op
+    description: Allows you to do /ee list
