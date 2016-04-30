@@ -65,6 +65,9 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 			utils.setupConfig();
 			cfg = utils.getConfig();
 			
+			utils.setupMetrics();
+			utils.setupUpdater(99746, getFile());
+			
 			instance = this;
 			map = new HashMap<String, CustomEnchantment>();
 			
