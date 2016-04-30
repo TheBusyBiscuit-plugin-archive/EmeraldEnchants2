@@ -8,22 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.general.audio.Soundboard;
-import me.mrCookieSlime.CSCoreLibSetup.CSCoreLibLoader;
-import me.mrCookieSlime.EmeraldEnchants.CustomEnchantment.ApplicableItem;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.CarryAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DamageAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DigAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.HitAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.InteractAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.ProjectileHitAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.ProjectileShootAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.WearAction;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -46,6 +30,22 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
+import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
+import me.mrCookieSlime.CSCoreLibPlugin.general.audio.Soundboard;
+import me.mrCookieSlime.CSCoreLibSetup.CSCoreLibLoader;
+import me.mrCookieSlime.EmeraldEnchants.CustomEnchantment.ApplicableItem;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.CarryAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DamageAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DigAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.HitAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.InteractAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.ProjectileHitAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.ProjectileShootAction;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.WearAction;
 
 public class EmeraldEnchants extends JavaPlugin implements Listener {
 	
@@ -211,22 +211,32 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 				
 				@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 				public void onInteract(PlayerInteractEvent e) {
-					if (registry.isItemInvalid(e.getPlayer().getItemInHand())) return;
-					for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getItemInHand())) {
-						for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
-							if (action instanceof InteractAction) ((InteractAction) action).onInteract(enchantment.getLevel(), e.getPlayer(), e);
+					if (!registry.isItemInvalid(e.getPlayer().getInventory().getItemInMainHand())) {
+						for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getInventory().getItemInMainHand())) {
+							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+								if (action instanceof InteractAction) ((InteractAction) action).onInteract(enchantment.getLevel(), e.getPlayer(), e);
+							}
+						}
+					}
+					
+					if (!registry.isItemInvalid(e.getPlayer().getInventory().getItemInOffHand())) {
+						for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getInventory().getItemInOffHand())) {
+							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+								if (action instanceof InteractAction) ((InteractAction) action).onInteract(enchantment.getLevel(), e.getPlayer(), e);
+							}
 						}
 					}
 				}
 				
 				@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 				public void onSwitch(PlayerItemHeldEvent e) {
-					if (registry.isItemInvalid(e.getPlayer().getItemInHand())) return;
 					Player p = e.getPlayer();
-					for (ItemEnchantment enchantment: registry.getEnchantments(p.getInventory().getItem(e.getNewSlot()))) {
-						for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
-							if (action instanceof CarryAction) {
-								((CarryAction) action).onCarry(enchantment.getLevel(), p, 0);
+					if (!registry.isItemInvalid(e.getPlayer().getInventory().getItemInMainHand())) {
+						for (ItemEnchantment enchantment: registry.getEnchantments(p.getInventory().getItem(e.getNewSlot()))) {
+							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+								if (action instanceof CarryAction) {
+									((CarryAction) action).onCarry(enchantment.getLevel(), p, 0);
+								}
 							}
 						}
 					}
@@ -239,10 +249,18 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 				@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 				public void onDamage(EntityDamageEvent e) {
 					if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player) {
-						if (registry.isItemInvalid(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getItemInHand())) return;
-						for (ItemEnchantment enchantment: registry.getEnchantments(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getItemInHand())) {
-							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
-								if (action instanceof HitAction) ((HitAction) action).onHit(enchantment.getLevel(), (Player) ((EntityDamageByEntityEvent) e).getDamager(), (EntityDamageByEntityEvent) e);
+						if (!registry.isItemInvalid(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getInventory().getItemInMainHand())) {
+							for (ItemEnchantment enchantment: registry.getEnchantments(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getInventory().getItemInMainHand())) {
+								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+									if (action instanceof HitAction) ((HitAction) action).onHit(enchantment.getLevel(), (Player) ((EntityDamageByEntityEvent) e).getDamager(), (EntityDamageByEntityEvent) e);
+								}
+							}
+						}
+						if (!registry.isItemInvalid(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getInventory().getItemInOffHand())) {
+							for (ItemEnchantment enchantment: registry.getEnchantments(((Player) ((EntityDamageByEntityEvent) e).getDamager()).getInventory().getItemInOffHand())) {
+								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+									if (action instanceof HitAction) ((HitAction) action).onHit(enchantment.getLevel(), (Player) ((EntityDamageByEntityEvent) e).getDamager(), (EntityDamageByEntityEvent) e);
+								}
 							}
 						}
 					}
@@ -271,15 +289,28 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 				@EventHandler
 				public void onBowUse(EntityShootBowEvent e) {
 					if (!(e.getEntity() instanceof Player) || !(e.getProjectile() instanceof Arrow)) return;
-					if (registry.isItemInvalid(((Player) e.getEntity()).getItemInHand())) return;
-					List<ItemEnchantment> enchantments = registry.getEnchantments(e.getBow());
-					if (!enchantments.isEmpty()) {
-						for (ItemEnchantment enchantment: enchantments) {
-							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
-								if (action instanceof ProjectileShootAction) ((ProjectileShootAction) action).onShoot(enchantment.getLevel(), (Player) e.getEntity(), (Arrow) e.getProjectile());
+					
+					if (!registry.isItemInvalid(((Player) e.getEntity()).getInventory().getItemInMainHand())) {
+						List<ItemEnchantment> enchantments = registry.getEnchantments(e.getBow());
+						if (!enchantments.isEmpty()) {
+							for (ItemEnchantment enchantment: enchantments) {
+								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+									if (action instanceof ProjectileShootAction) ((ProjectileShootAction) action).onShoot(enchantment.getLevel(), (Player) e.getEntity(), (Arrow) e.getProjectile());
+								}
 							}
+							bows.put(e.getProjectile().getUniqueId(), enchantments);
 						}
-						bows.put(e.getProjectile().getUniqueId(), enchantments);
+					}
+					if (!registry.isItemInvalid(((Player) e.getEntity()).getInventory().getItemInOffHand())) {
+						List<ItemEnchantment> enchantments = registry.getEnchantments(e.getBow());
+						if (!enchantments.isEmpty()) {
+							for (ItemEnchantment enchantment: enchantments) {
+								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+									if (action instanceof ProjectileShootAction) ((ProjectileShootAction) action).onShoot(enchantment.getLevel(), (Player) e.getEntity(), (Arrow) e.getProjectile());
+								}
+							}
+							bows.put(e.getProjectile().getUniqueId(), enchantments);
+						}
 					}
 				}
 				
@@ -302,11 +333,11 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 					@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 					public void onDig(BlockBreakEvent e) {
 						if (e instanceof IgnoredMiningEvent) return;
-						if (registry.isItemInvalid(e.getPlayer().getItemInHand())) return;
-						List<ItemStack> comparison = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getItemInHand());
-						List<ItemStack> drops = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getItemInHand());
+						if (registry.isItemInvalid(e.getPlayer().getInventory().getItemInMainHand())) return;
+						List<ItemStack> comparison = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getInventory().getItemInMainHand());
+						List<ItemStack> drops = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getInventory().getItemInMainHand());
 						
-						for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getItemInHand())) {
+						for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getInventory().getItemInMainHand())) {
 							for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
 								if (action instanceof DigAction) ((DigAction) action).onDig(enchantment.getLevel(), e.getPlayer(), e.getBlock(), drops);
 							}
@@ -339,8 +370,17 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 				@Override
 				public void run() {
 					for (Player p: Bukkit.getOnlinePlayers()) {
-						if (!registry.isItemInvalid(p.getItemInHand())) {
-							for (ItemEnchantment enchantment: registry.getEnchantments(p.getItemInHand())) {
+						if (!registry.isItemInvalid(p.getInventory().getItemInMainHand())) {
+							for (ItemEnchantment enchantment: registry.getEnchantments(p.getInventory().getItemInMainHand())) {
+								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
+									if (action instanceof CarryAction) {
+										((CarryAction) action).onCarry(enchantment.getLevel(), p, delay);
+									}
+								}
+							}
+						}
+						if (!registry.isItemInvalid(p.getInventory().getItemInOffHand())) {
+							for (ItemEnchantment enchantment: registry.getEnchantments(p.getInventory().getItemInOffHand())) {
 								for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
 									if (action instanceof CarryAction) {
 										((CarryAction) action).onCarry(enchantment.getLevel(), p, delay);

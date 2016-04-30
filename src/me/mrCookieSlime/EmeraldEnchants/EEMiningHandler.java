@@ -13,7 +13,7 @@ public class EEMiningHandler extends NativeMiningHandler {
 	@Override
 	public List<ItemStack> onBlockBreak(BlockBreakEvent e, List<ItemStack> drops ,ItemStack item) {
 		if (e instanceof IgnoredMiningEvent) return drops;
-		for (ItemEnchantment enchantment: EmeraldEnchants.getInstance().getRegistry().getEnchantments(e.getPlayer().getItemInHand())) {
+		for (ItemEnchantment enchantment: EmeraldEnchants.getInstance().getRegistry().getEnchantments(e.getPlayer().getInventory().getItemInMainHand())) {
 			for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
 				if (action instanceof DigAction) ((DigAction) action).onDig(enchantment.getLevel(), e.getPlayer(), e.getBlock(), drops);
 			}

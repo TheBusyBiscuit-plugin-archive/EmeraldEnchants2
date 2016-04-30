@@ -45,10 +45,10 @@ public class EECommand implements CommandExecutor {
 					else {
 						try {
 							int level = Integer.parseInt(args[2]);
-							ItemStack item = p.getItemInHand();
+							ItemStack item = p.getInventory().getItemInMainHand();
 							if (item == null || item.getType() == null || item.getType() == Material.AIR) sender.sendMessage("§4You must be holding an item in your Hand!");
 							else {
-								EmeraldEnchants.getInstance().getRegistry().applyEnchantment(p.getItemInHand(), enchantment, level);
+								EmeraldEnchants.getInstance().getRegistry().applyEnchantment(p.getInventory().getItemInMainHand(), enchantment, level);
 								sender.sendMessage("§bBling Bling! It's so shiny!");
 							}
 						} catch(NumberFormatException x) {
