@@ -380,7 +380,7 @@ public class EnchantmentSetup {
 
 				@Override
 				void onDamage(int level, Player p, EntityDamageEvent e) {
-					if (((EntityDamageByEntityEvent) e).getDamager() instanceof EnderPearl) {
+					if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof EnderPearl) {
 						e.setDamage(e.getDamage() / (level + 1));
 					}
 				}
@@ -424,8 +424,10 @@ public class EnchantmentSetup {
 	
 						@Override
 						void onCarry(int level, Player p, int delay) {
+							final double health = p.getHealth();
 							if (p.hasPotionEffect(type)) p.removePotionEffect(type);
 							p.addPotionEffect(new PotionEffect(type, delay * 20 + 100, level - 1));
+							if (health <= p.getMaxHealth()) p.setHealth(health);
 						}
 							
 					},
@@ -433,8 +435,10 @@ public class EnchantmentSetup {
 	
 						@Override
 						void onWear(int level, Player p, int delay) {
+							final double health = p.getHealth();
 							if (p.hasPotionEffect(type)) p.removePotionEffect(type);
 							p.addPotionEffect(new PotionEffect(type, delay * 20 + 100, level - 1));
+							if (health <= p.getMaxHealth()) p.setHealth(health);
 						}
 									
 					}
