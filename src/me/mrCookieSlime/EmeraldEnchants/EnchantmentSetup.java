@@ -435,7 +435,7 @@ public final class EnchantmentSetup {
 				item.setItemMeta(meta);
 				
 				EmeraldEnchants.getInstance().getCfg().setDefaultValue(name + ".enabled", !effect_blacklist.contains(type));
-				registry.registerEnchantment(name, item, 4, Arrays.asList(ApplicableItem.values()), Arrays.asList("Gives you the Potion Effect", "\"" + StringUtils.format(name) + "\"", "while wearing or carrying an Item", "with this Enchantment"), 
+				registry.registerEnchantment(name, item, 3, Arrays.asList(ApplicableItem.values()), Arrays.asList("Gives you the Potion Effect", "\"" + StringUtils.format(name) + "\"", "while wearing or carrying an Item", "with this Enchantment"), 
 					new CarryAction() {
 	
 						@Override
