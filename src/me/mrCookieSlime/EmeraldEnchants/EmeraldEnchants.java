@@ -23,6 +23,7 @@ import me.mrCookieSlime.CSCoreLibSetup.CSCoreLibLoader;
 import me.mrCookieSlime.EmeraldEnchants.actions.EnchantmentAction;
 import me.mrCookieSlime.EmeraldEnchants.listeners.EnchantmentActionListener;
 import me.mrCookieSlime.EmeraldEnchants.listeners.EnchantmentTableListener;
+import me.mrCookieSlime.EmeraldEnchants.slimefun.SlimefunHook;
 
 public class EmeraldEnchants extends JavaPlugin implements Listener {
 	

@@ -1,4 +1,4 @@
-package me.mrCookieSlime.EmeraldEnchants;
+package me.mrCookieSlime.EmeraldEnchants.slimefun;
 
 import me.mrCookieSlime.Slimefun.api.Slimefun;
 

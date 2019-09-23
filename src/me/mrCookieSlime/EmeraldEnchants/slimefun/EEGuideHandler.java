@@ -1,4 +1,4 @@
-package me.mrCookieSlime.EmeraldEnchants;
+package me.mrCookieSlime.EmeraldEnchants.slimefun;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import me.mrCookieSlime.CSCoreLibPlugin.PlayerRunnable;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
+import me.mrCookieSlime.EmeraldEnchants.EnchantmentGuide;
 import me.mrCookieSlime.Slimefun.api.GuideHandler;
 
 public class EEGuideHandler implements GuideHandler {
