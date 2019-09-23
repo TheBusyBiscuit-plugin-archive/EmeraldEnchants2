@@ -6,27 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Player.PlayerInventory;
-import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.general.audio.Soundboard;
-import me.mrCookieSlime.EmeraldEnchants.CustomEnchantment.ApplicableItem;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.CarryAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DamageAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.DigAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.HitAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.InteractAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.ProjectileHitAction;
-import me.mrCookieSlime.EmeraldEnchants.EnchantmentAction.WearAction;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EnderPearl;
@@ -39,18 +27,43 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class EnchantmentSetup {
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.TreeCalculator;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Block.Vein;
+import me.mrCookieSlime.CSCoreLibPlugin.general.Player.PlayerInventory;
+import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.CarryAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.DamageAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.DigAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.HitAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.InteractAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.ProjectileHitAction;
+import me.mrCookieSlime.EmeraldEnchants.actions.implementations.WearAction;
+
+public final class EnchantmentSetup {
 	
+	private EnchantmentSetup() {}
 	
-	public static void setupDefaultEnchantments(EnchantmentRegistry registry) {
-		Set<PotionEffectType> effect_blacklist = new HashSet<PotionEffectType>();
-		Map<PotionEffectType, String> aliases = new HashMap<PotionEffectType, String>();
+	public static void setupDefaultEnchantments(EnchantmentRegistry registry, Random random) {
+		Set<PotionEffectType> effect_blacklist = new HashSet<>();
+		Map<PotionEffectType, String> aliases = new HashMap<>();
 		effect_blacklist.add(PotionEffectType.HARM);
 		effect_blacklist.add(PotionEffectType.HEAL);
+		effect_blacklist.add(PotionEffectType.BAD_OMEN);
+		effect_blacklist.add(PotionEffectType.CONDUIT_POWER);
+		effect_blacklist.add(PotionEffectType.DOLPHINS_GRACE);
+		effect_blacklist.add(PotionEffectType.HERO_OF_THE_VILLAGE);
+		effect_blacklist.add(PotionEffectType.LEVITATION);
+		effect_blacklist.add(PotionEffectType.BLINDNESS);
+		effect_blacklist.add(PotionEffectType.CONFUSION);
+		effect_blacklist.add(PotionEffectType.POISON);
+		effect_blacklist.add(PotionEffectType.WITHER);
+		
 		aliases.put(PotionEffectType.CONFUSION, "NAUSEA");
 		aliases.put(PotionEffectType.DAMAGE_RESISTANCE, "RESISTANCE");
 		aliases.put(PotionEffectType.FAST_DIGGING, "HASTE");
@@ -59,7 +72,7 @@ public class EnchantmentSetup {
 		aliases.put(PotionEffectType.SLOW, "SLOWNESS");
 		aliases.put(PotionEffectType.SLOW_DIGGING, "MINING_FATIQUE");
 		
-		registry.registerEnchantment("FARMER_SPIRIT", new ItemStack(Material.SEEDS), 1, Arrays.asList(ApplicableItem.BOOTS), Arrays.asList("Trampling Crops will never have", "to worry you again"),
+		registry.registerEnchantment("FARMER_SPIRIT", new ItemStack(Material.WHEAT_SEEDS), 1, Arrays.asList(ApplicableItem.BOOTS), Arrays.asList("Trampling Crops will never have", "to worry you again"),
 			new InteractAction() {
 
 				@Override
@@ -70,24 +83,13 @@ public class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("EXPLOSIVE", new ItemStack(Material.TNT), 1000, Arrays.asList(ApplicableItem.PICKAXE, ApplicableItem.AXE, ApplicableItem.SHOVEL), Arrays.asList("Allows you to mine multiple", "Blocks at once"),
-			new DigAction() {
-
-				@Override
-				public void onDig(int level, Player p, Block block, List<ItemStack> drops) {
-					EmeraldEnchants.getInstance().createExplosion(p, block, level);
-				}
-					
-			}
-		);
-		
 		registry.registerEnchantment("VEIN_MINER", new ItemStack(Material.DIAMOND_PICKAXE), 50, Arrays.asList(ApplicableItem.PICKAXE, ApplicableItem.AXE, ApplicableItem.SHOVEL), Arrays.asList("Allows you to mine all", "Blocks of the same Type", "at once"),
 			new DigAction() {
 
 				@Override
 				public void onDig(int level, Player p, Block block, List<ItemStack> drops) {
 					PlayerInventory.damageItemInHand(p);
-					List<Location> blocks = new ArrayList<Location>();
+					List<Location> blocks = new ArrayList<>();
 					Vein.calculate(block.getLocation(), block.getLocation(), blocks, level);
 					blocks.remove(block.getLocation());
 					for (Location l: blocks) {
@@ -111,9 +113,9 @@ public class EnchantmentSetup {
 
 				@Override
 				public void onDig(int level, Player p, Block block, List<ItemStack> drops) {
-					if (block.getType().equals(Material.LOG) || block.getType().equals(Material.LOG_2)) {
+					if (Tag.LOGS.isTagged(block.getType())) {
 						PlayerInventory.damageItemInHand(p);
-						List<Location> blocks = new ArrayList<Location>();
+						List<Location> blocks = new ArrayList<>();
 						TreeCalculator.getTree(block.getLocation(), block.getLocation(), blocks);
 						blocks.remove(block.getLocation());
 						for (Location l: blocks) {
@@ -140,9 +142,11 @@ public class EnchantmentSetup {
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 0));
+						if (random.nextInt(10) < 4) {
+							((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 0));
+						}
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 0));
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 0));
 					}
@@ -150,7 +154,7 @@ public class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("VAMPIRISM", new ItemStack(Material.SKULL_ITEM, 1, (short) 1), 4, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Absorbs a small fraction of your Opponent's Health"), 
+		registry.registerEnchantment("VAMPIRISM", new ItemStack(Material.WITHER_SKELETON_SKULL), 4, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Absorbs a small fraction of your Opponent's Health"), 
 			new HitAction() {
 				
 				@Override
@@ -158,7 +162,9 @@ public class EnchantmentSetup {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					LivingEntity n = (LivingEntity) e.getEntity();
 					double health = p.getHealth() + (n.getHealth() / 20 * level);
-					if (health > p.getMaxHealth()) health = p.getMaxHealth();
+					if (health > p.getMaxHealth()) {
+						health = p.getMaxHealth();
+					}
 					p.setHealth(health);
 				}
 			}
@@ -187,11 +193,11 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (!(e.getEntity() instanceof EntityDamageByEntityEvent)) return;
 					if (!(((EntityDamageByEntityEvent) e).getDamager() instanceof Arrow)) return;
 					
-					if (CSCoreLib.randomizer().nextInt(10) < level) e.setCancelled(true);
+					if (random.nextInt(10) < level) e.setCancelled(true);
 				}
 			}
 		);
@@ -203,9 +209,9 @@ public class EnchantmentSetup {
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 0));
 					}
 				}
@@ -213,12 +219,12 @@ public class EnchantmentSetup {
 			new ProjectileHitAction() {
 
 				@Override
-				void onHit(int level, EntityDamageByEntityEvent e) {
+				public void onHit(int level, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 0));
 					}
 				}
@@ -226,16 +232,16 @@ public class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("ZOMBIE_FLU", new ItemStack(Material.SKULL_ITEM, 1, (short) 2), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE, ApplicableItem.BOW), Arrays.asList("Gives your Enemies Hunger"), 
+		registry.registerEnchantment("ZOMBIE_FLU", new ItemStack(Material.ZOMBIE_HEAD), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE, ApplicableItem.BOW), Arrays.asList("Gives your Enemies Hunger"), 
 			new HitAction() {
 				
 				@Override
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 0));
 					}
 				}
@@ -243,12 +249,12 @@ public class EnchantmentSetup {
 			new ProjectileHitAction() {
 
 				@Override
-				void onHit(int level, EntityDamageByEntityEvent e) {
+				public void onHit(int level, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 0));
 					}
 				}
@@ -256,16 +262,16 @@ public class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("CONCEALING", new ItemStack(Material.WOOL, 1, (short) 15), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE, ApplicableItem.BOW), Arrays.asList("Gives your Enemies Blindness"), 
+		registry.registerEnchantment("CONCEALING", new ItemStack(Material.BLACK_WOOL), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE, ApplicableItem.BOW), Arrays.asList("Gives your Enemies Blindness"), 
 			new HitAction() {
 				
 				@Override
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 0));
 					}
 				}
@@ -273,12 +279,12 @@ public class EnchantmentSetup {
 			new ProjectileHitAction() {
 
 				@Override
-				void onHit(int level, EntityDamageByEntityEvent e) {
+				public void onHit(int level, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 0));
 					}
 				}
@@ -293,9 +299,9 @@ public class EnchantmentSetup {
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
 					}
 				}
@@ -303,12 +309,12 @@ public class EnchantmentSetup {
 			new ProjectileHitAction() {
 
 				@Override
-				void onHit(int level, EntityDamageByEntityEvent e) {
+				public void onHit(int level, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
 					}
 				}
@@ -316,16 +322,16 @@ public class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("WITHERING", new ItemStack(Material.SKULL_ITEM, 1, (short) 1), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Gives your Enemies the Wither Effect"), 
+		registry.registerEnchantment("WITHERING", new ItemStack(Material.WITHER_SKELETON_SKULL), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Gives your Enemies the Wither Effect"), 
 			new HitAction() {
 				
 				@Override
 				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
 					if (!(e.getEntity() instanceof LivingEntity)) return;
 					if (level == 1) {
-						if (CSCoreLib.randomizer().nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 0));
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 0));
 					}
-					else if (CSCoreLib.randomizer().nextInt(10) < 5) {
+					else if (random.nextInt(10) < 5) {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 200, 0));
 					}
 				}
@@ -336,11 +342,13 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (!(e.getEntity() instanceof EntityDamageByEntityEvent)) return;
 					Entity n = ((EntityDamageByEntityEvent) e).getDamager();
 					if (!(n instanceof LivingEntity)) return;
-					if (CSCoreLib.randomizer().nextInt(100) < 25 + level * 25) n.setFireTicks(20 * (4 + level * 2));
+					if (random.nextInt(100) < 25 + level * 25) {
+						n.setFireTicks(20 * (4 + level * 2));
+					}
 				}
 			}
 		);
@@ -349,7 +357,7 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e.getCause() == DamageCause.MAGIC) e.setDamage(e.getDamage() / (level + 1));
 				}
 			}
@@ -359,17 +367,17 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e.getCause() == DamageCause.POISON) e.setDamage(e.getDamage() / (level + 1));
 				}
 			}
 		);
 		
-		registry.registerEnchantment("WITHER_PROTECTION", new ItemStack(Material.SKULL_ITEM, 1, (short) 1), 4, Arrays.asList(ApplicableItem.BOOTS, ApplicableItem.LEGGINGS, ApplicableItem.CHESTPLATE, ApplicableItem.HELMET), Arrays.asList("Protection against Damage taken", "from the Wither Effect"), 
+		registry.registerEnchantment("WITHER_PROTECTION", new ItemStack(Material.WITHER_SKELETON_SKULL), 4, Arrays.asList(ApplicableItem.BOOTS, ApplicableItem.LEGGINGS, ApplicableItem.CHESTPLATE, ApplicableItem.HELMET), Arrays.asList("Protection against Damage taken", "from the Wither Effect"), 
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e.getCause() == DamageCause.WITHER) e.setDamage(e.getDamage() / (level + 1));
 				}
 			}
@@ -379,7 +387,7 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof EnderPearl) {
 						e.setDamage(e.getDamage() / (level + 1));
 					}
@@ -391,7 +399,7 @@ public class EnchantmentSetup {
 			new WearAction() {
 
 				@Override
-				void onWear(int level, Player p, int delay) {
+				public void onWear(int level, Player p, int delay) {
 					boolean sound = false;
 					for (Entity n: p.getNearbyEntities(level, level, level)) {
 						if (n instanceof Item && !n.hasMetadata("no_pickup")) {
@@ -399,7 +407,7 @@ public class EnchantmentSetup {
 							sound = true;
 						}
 					}
-					if (sound) p.playSound(p.getLocation(), Soundboard.getLegacySounds("ENTITY_ENDERMEN_TELEPORT", "ENDERMAN_TELEPORT"), 5F, 2F);
+					if (sound) p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 5F, 2F);
 				}
 			
 			}
@@ -409,7 +417,7 @@ public class EnchantmentSetup {
 			new DamageAction() {
 
 				@Override
-				void onDamage(int level, Player p, EntityDamageEvent e) {
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
 					if (e.getCause() == DamageCause.FALLING_BLOCK) e.setDamage(e.getDamage() / (level + 1));
 				}
 			}
@@ -417,28 +425,40 @@ public class EnchantmentSetup {
 		
 		
 		for (final PotionEffectType type: PotionEffectType.values()) {
-			if (type != null && !effect_blacklist.contains(type)) {
+			if (type != null) {
 				String name = aliases.containsKey(type) ? aliases.get(type): type.getName();
-				registry.registerEnchantment(name, new ItemStack(Material.POTION), 4, Arrays.asList(ApplicableItem.values()), Arrays.asList("Gives you the Potion Effect", "\"" + StringUtils.format(name) + "\"", "while wearing or carrying an Item", "with this Enchantment"), 
+				
+				ItemStack item = new ItemStack(Material.POTION);
+				PotionMeta meta = (PotionMeta) item.getItemMeta();
+				meta.setColor(type.getColor());
+				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+				item.setItemMeta(meta);
+				
+				EmeraldEnchants.getInstance().getCfg().setDefaultValue(name + ".enabled", !effect_blacklist.contains(type));
+				registry.registerEnchantment(name, item, 4, Arrays.asList(ApplicableItem.values()), Arrays.asList("Gives you the Potion Effect", "\"" + StringUtils.format(name) + "\"", "while wearing or carrying an Item", "with this Enchantment"), 
 					new CarryAction() {
 	
 						@Override
-						void onCarry(int level, Player p, int delay) {
+						public void onCarry(int level, Player p, int delay) {
 							final double health = p.getHealth();
 							if (p.hasPotionEffect(type)) p.removePotionEffect(type);
 							p.addPotionEffect(new PotionEffect(type, delay * 20 + 100, level - 1));
-							if (health <= p.getMaxHealth()) p.setHealth(health);
+							if (health <= p.getMaxHealth()) {
+								p.setHealth(health);
+							}
 						}
 							
 					},
 					new WearAction() {
 	
 						@Override
-						void onWear(int level, Player p, int delay) {
+						public void onWear(int level, Player p, int delay) {
 							final double health = p.getHealth();
 							if (p.hasPotionEffect(type)) p.removePotionEffect(type);
 							p.addPotionEffect(new PotionEffect(type, delay * 20 + 100, level - 1));
-							if (health <= p.getMaxHealth()) p.setHealth(health);
+							if (health <= p.getMaxHealth()) {
+								p.setHealth(health);
+							}
 						}
 									
 					}

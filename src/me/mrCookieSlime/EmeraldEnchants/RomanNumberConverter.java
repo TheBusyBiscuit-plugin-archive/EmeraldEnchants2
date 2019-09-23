@@ -15,7 +15,6 @@ public class RomanNumberConverter {
 			 int result = 0;
 			 int mediator = 0;
 			 
-			   
 			 for (int i = 0; i < roman.length() - 1; i++) {
 				 if (getInt(roman.charAt(i)) > getInt(roman.charAt(i + 1))) {
 					 result = result + getInt(roman.charAt(i)) + mediator;

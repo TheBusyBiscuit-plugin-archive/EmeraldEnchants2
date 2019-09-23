@@ -3,10 +3,10 @@ package me.mrCookieSlime.EmeraldEnchants;
 import java.util.Collection;
 import java.util.List;
 
-import me.mrCookieSlime.EmeraldEnchants.CustomEnchantment.ApplicableItem;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import me.mrCookieSlime.EmeraldEnchants.actions.EnchantmentAction;
 
 public interface EnchantmentRegistry {
 	

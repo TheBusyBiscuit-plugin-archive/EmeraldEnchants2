@@ -6,7 +6,7 @@
 
     <groupId>me.mrCookieSlime</groupId>
     <artifactId>EmeraldEnchants</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -22,13 +22,13 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
-        <repository>
-            <id>worldedit-worldguard-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
-        </repository>
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
+		</repository>
+        <repository>
+  			<id>CodeMC</id>
+  			<url>https://repo.codemc.org/repository/maven-public</url>
 		</repository>
     </repositories>
 
@@ -45,34 +45,88 @@
         <finalName>${project.name}-${project.version}</finalName>
         <resources>
             <resource>
-            <!-- Use plugin.yml in the src directory-->
                 <directory>${basedir}/src</directory>
                 <filtering>true</filtering>
                 <includes>
+                    <include>config.yml</include>
                     <include>plugin.yml</include>
                 </includes>
             </resource>
         </resources>
+        
+        <plugins>
+        	<plugin>
+    			<groupId>org.apache.maven.plugins</groupId>
+    			<artifactId>maven-shade-plugin</artifactId>
+    			<version>3.2.1</version>
+
+    			<configuration>
+    				<filters>
+      					<filter>
+    						<artifact>com.github.thebusybiscuit:CS-CoreLib2</artifact>
+    						<includes>
+    							<include>**/cscorelib2/config/**</include>
+    							<include>**/cscorelib2/updater/**</include>
+    						</includes>
+  						</filter>
+      				</filters>
+      					
+      				<relocations>
+      					<relocation>
+            				<pattern>org.bstats</pattern>
+            				<shadedPattern>me.mrCookieSlime.EmeraldEnchants.bstats</shadedPattern>
+          				</relocation>
+          				
+        				<relocation>
+          					<pattern>io.github.thebusybiscuit.cscorelib2</pattern>
+          					<shadedPattern>me.mrCookieSlime.EmeraldEnchants.cscorelib2</shadedPattern>
+      					</relocation>
+      				</relocations>
+    			</configuration>
+
+    			<executions>
+      				<execution>
+        				<phase>package</phase>
+        				<goals>
+         					<goal>shade</goal>
+        				</goals>
+      				</execution>
+    			</executions>
+  			</plugin>
+        </plugins>	
     </build>
 
     <dependencies>
-        <!--Bukkit API-->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.12-R0.1-SNAPSHOT</version>
+           	<groupId>org.bukkit</groupId>
+           	<artifactId>bukkit</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
 	        <groupId>com.github.TheBusyBiscuit</groupId>
 	        <artifactId>CS-CoreLib</artifactId>
-	        <version>5b8bb9924c</version>
+	        <version>45909a0324</version>
+            <scope>provided</scope>
 	    </dependency>
         <dependency>
-	        <groupId>com.github.TheBusyBiscuit</groupId>
-	        <artifactId>Slimefun4-legacy</artifactId>
-	        <version>614e7b607e</version>
+	    	<groupId>com.github.TheBusyBiscuit</groupId>
+	   		<artifactId>Slimefun4</artifactId>
+	   		<version>dcee66839f</version>
+            <scope>provided</scope>
 	    </dependency>
+        <dependency>
+  			<groupId>com.github.thebusybiscuit</groupId>
+  			<artifactId>CS-CoreLib2</artifactId>
+  			<version>0.3.8</version>
+  			<scope>compile</scope>
+		</dependency>
+		<dependency>
+  			<groupId>org.bstats</groupId>
+  			<artifactId>bstats-bukkit</artifactId>
+  			<version>1.5</version>
+  			<scope>compile</scope>
+		</dependency>
     </dependencies>
 
 </project>

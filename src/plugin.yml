@@ -1,11 +1,12 @@
 name: EmeraldEnchants
-version: 2.0
-author: mrCookieSlime
-website: http://mrcookieslime.github.io/
+version: ${project.version}
+author: TheBusyBiscuit
+website: http://TheBusyBiscuit.github.io/
 
 main: me.mrCookieSlime.EmeraldEnchants.EmeraldEnchants
+api-version: 1.14
 
-softdepend: [CS-CoreLib, PrisonUtils, Slimefun]
+softdepend: [CS-CoreLib, Slimefun]
 
 commands:
   ee:
