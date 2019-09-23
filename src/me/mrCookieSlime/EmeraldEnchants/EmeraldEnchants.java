@@ -47,7 +47,7 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 
 			if (getDescription().getVersion().startsWith("DEV - ")) {
 				// If we are using a development build, we want to switch to our custom 
-				updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/EmeraldEnchants/master");
+				updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/EmeraldEnchants2/master");
 			}
 
 			if (updater != null && cfg.getBoolean("options.auto-update")) updater.start();
