@@ -103,7 +103,7 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 
 				@Override
 				public void applyEnchantment(ItemStack item, CustomEnchantment enchantment, int level) {
-					if (item == null || item.getType() == null || item.getType().equals(Material.AIR) || level < 1) return;
+					if (item == null || item.getType() == null || item.getType().equals(Material.AIR) || level < 0) return;
 					List<String> lore = new ArrayList<>();
 					if (!isEnchantmentApplied(item, enchantment.getName())) {
 						lore.add(LORE_PREFIX + enchantment.getDisplayName() + LORE_SUFFIX + " " + RomanNumberConverter.convertNumber(level));
