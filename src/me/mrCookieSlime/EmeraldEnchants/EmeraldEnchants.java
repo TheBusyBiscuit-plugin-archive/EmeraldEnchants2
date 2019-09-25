@@ -61,13 +61,18 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 				@Override
 				public void registerEnchantment(String name, int maxLevel, List<ApplicableItem> applicableItems, List<String> description, EnchantmentAction... actions) {
 					cfg.setDefaultValue(name + ".enabled", true);
+					boolean enabled = cfg.getBoolean(name + ".enabled");
+					
+					cfg.setDefaultValue("enchantment-table.ENCHANTED_BOOK." + name, enabled);
 					for (ApplicableItem item: applicableItems) {
 						for (Material type: item.getItems()) {
-							cfg.setDefaultValue("enchantment-table." + type.toString() + "." + name, true);
+							cfg.setDefaultValue("enchantment-table." + type.toString() + "." + name, enabled);
 						}
 					}
 					cfg.save();
-					if (cfg.getBoolean(name + ".enabled")) map.put(StringUtils.format(name), new CustomEnchantment(name, maxLevel, applicableItems, description, actions));
+					if (enabled) {
+						map.put(StringUtils.format(name), new CustomEnchantment(name, maxLevel, applicableItems, description, actions));
+					}
 				}
 
 				@Override
@@ -80,7 +85,7 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 
 				@Override
 				public List<ItemEnchantment> getEnchantments(ItemStack item) {
-					if (item == null || item.getType() == null || item.getType().equals(Material.AIR) || !item.hasItemMeta() || !item.getItemMeta().hasLore()) return new ArrayList<>();
+					if (item == null || item.getType() == null || item.getType() == Material.AIR || !item.hasItemMeta() || !item.getItemMeta().hasLore()) return new ArrayList<>();
 					List<ItemEnchantment> enchantments = new ArrayList<>();
 					for (String line: item.getItemMeta().getLore()) {
 						if (line.startsWith(LORE_PREFIX)) {
@@ -103,7 +108,7 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 
 				@Override
 				public void applyEnchantment(ItemStack item, CustomEnchantment enchantment, int level) {
-					if (item == null || item.getType() == null || item.getType().equals(Material.AIR) || level < 0) return;
+					if (item == null || item.getType() == null || item.getType() == Material.AIR || level < 0) return;
 					List<String> lore = new ArrayList<>();
 					if (!isEnchantmentApplied(item, enchantment.getName())) {
 						lore.add(LORE_PREFIX + enchantment.getDisplayName() + LORE_SUFFIX + " " + RomanNumberConverter.convertNumber(level));
@@ -170,13 +175,16 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 
 				@Override
 				public List<CustomEnchantment> getEnchantments(Material type) {
+					if (type == Material.ENCHANTED_BOOK) {
+						return new ArrayList<>(getEnchantments());
+					}
+					
 					List<CustomEnchantment> list = new ArrayList<>();
 					for (CustomEnchantment enchantment: getEnchantments()) {
-						types:
 						for (ApplicableItem a: enchantment.getApplicableItems()) {
 							if (a.getItems().contains(type)) {
 								list.add(enchantment);
-								break types;
+								break;
 							}
 						}
 					}

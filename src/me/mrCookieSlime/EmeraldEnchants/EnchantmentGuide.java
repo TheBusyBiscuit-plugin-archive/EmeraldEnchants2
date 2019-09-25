@@ -10,8 +10,10 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 
-public class EnchantmentGuide {
+public final class EnchantmentGuide {
 
+	private EnchantmentGuide() {}
+	
 	public static void open(Player p) {
 		ChestMenu menu = new ChestMenu("&bEnchantment Guide");
 		int index = 0;

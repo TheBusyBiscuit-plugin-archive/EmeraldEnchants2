@@ -14,7 +14,7 @@ import me.mrCookieSlime.Slimefun.api.GuideHandler;
 
 public class EEGuideHandler implements GuideHandler {
 	
-	PlayerRunnable runnable;
+	private PlayerRunnable runnable;
 	
 	public EEGuideHandler() {
 		runnable = new PlayerRunnable(-1) {

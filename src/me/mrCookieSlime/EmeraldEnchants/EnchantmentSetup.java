@@ -50,19 +50,19 @@ public final class EnchantmentSetup {
 	private EnchantmentSetup() {}
 	
 	public static void setupDefaultEnchantments(EnchantmentRegistry registry, Random random) {
-		Set<PotionEffectType> effect_blacklist = new HashSet<>();
+		Set<PotionEffectType> effectBlacklist = new HashSet<>();
 		Map<PotionEffectType, String> aliases = new HashMap<>();
-		effect_blacklist.add(PotionEffectType.HARM);
-		effect_blacklist.add(PotionEffectType.HEAL);
-		effect_blacklist.add(PotionEffectType.BAD_OMEN);
-		effect_blacklist.add(PotionEffectType.CONDUIT_POWER);
-		effect_blacklist.add(PotionEffectType.DOLPHINS_GRACE);
-		effect_blacklist.add(PotionEffectType.HERO_OF_THE_VILLAGE);
-		effect_blacklist.add(PotionEffectType.LEVITATION);
-		effect_blacklist.add(PotionEffectType.BLINDNESS);
-		effect_blacklist.add(PotionEffectType.CONFUSION);
-		effect_blacklist.add(PotionEffectType.POISON);
-		effect_blacklist.add(PotionEffectType.WITHER);
+		effectBlacklist.add(PotionEffectType.HARM);
+		effectBlacklist.add(PotionEffectType.HEAL);
+		effectBlacklist.add(PotionEffectType.BAD_OMEN);
+		effectBlacklist.add(PotionEffectType.CONDUIT_POWER);
+		effectBlacklist.add(PotionEffectType.DOLPHINS_GRACE);
+		effectBlacklist.add(PotionEffectType.HERO_OF_THE_VILLAGE);
+		effectBlacklist.add(PotionEffectType.LEVITATION);
+		effectBlacklist.add(PotionEffectType.BLINDNESS);
+		effectBlacklist.add(PotionEffectType.CONFUSION);
+		effectBlacklist.add(PotionEffectType.POISON);
+		effectBlacklist.add(PotionEffectType.WITHER);
 		
 		aliases.put(PotionEffectType.CONFUSION, "NAUSEA");
 		aliases.put(PotionEffectType.DAMAGE_RESISTANCE, "RESISTANCE");
@@ -70,7 +70,7 @@ public final class EnchantmentSetup {
 		aliases.put(PotionEffectType.INCREASE_DAMAGE, "STRENGTH");
 		aliases.put(PotionEffectType.JUMP, "JUMP_BOOST");
 		aliases.put(PotionEffectType.SLOW, "SLOWNESS");
-		aliases.put(PotionEffectType.SLOW_DIGGING, "MINING_FATIQUE");
+		aliases.put(PotionEffectType.SLOW_DIGGING, "MINING_FATIGUE");
 		
 		registry.registerEnchantment("FARMER_SPIRIT", new ItemStack(Material.WHEAT_SEEDS), 1, Arrays.asList(ApplicableItem.BOOTS), Arrays.asList("Trampling Crops will never have", "to worry you again"),
 			new InteractAction() {
@@ -395,6 +395,18 @@ public final class EnchantmentSetup {
 			}
 		);
 		
+		registry.registerEnchantment("PRICK_PROTECTION", new ItemStack(Material.CACTUS), 4, Arrays.asList(ApplicableItem.BOOTS, ApplicableItem.LEGGINGS, ApplicableItem.CHESTPLATE, ApplicableItem.HELMET), Arrays.asList("Protection against Damage taken", "from Cacti and Bushes"), 
+			new DamageAction() {
+
+				@Override
+				public void onDamage(int level, Player p, EntityDamageEvent e) {
+					if (e.getCause() == DamageCause.CONTACT) {
+						e.setDamage(e.getDamage() / (level + 1));
+					}
+				}
+			}
+		);
+		
 		registry.registerEnchantment("MAGNETIC_AURA", new ItemStack(Material.HOPPER), 10, Arrays.asList(ApplicableItem.BOOTS, ApplicableItem.LEGGINGS, ApplicableItem.CHESTPLATE, ApplicableItem.HELMET), Arrays.asList("Picks up all nearby Items while", "being worn"), 
 			new WearAction() {
 
@@ -434,7 +446,7 @@ public final class EnchantmentSetup {
 				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 				item.setItemMeta(meta);
 				
-				EmeraldEnchants.getInstance().getCfg().setDefaultValue(name + ".enabled", !effect_blacklist.contains(type));
+				EmeraldEnchants.getInstance().getCfg().setDefaultValue(name + ".enabled", !effectBlacklist.contains(type));
 				registry.registerEnchantment(name, item, 3, Arrays.asList(ApplicableItem.values()), Arrays.asList("Gives you the Potion Effect", "\"" + StringUtils.format(name) + "\"", "while wearing or carrying an Item", "with this Enchantment"), 
 					new CarryAction() {
 	
