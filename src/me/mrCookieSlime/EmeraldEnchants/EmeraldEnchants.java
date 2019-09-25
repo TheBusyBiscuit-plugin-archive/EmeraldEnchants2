@@ -206,7 +206,7 @@ public class EmeraldEnchants extends JavaPlugin implements Listener {
 			
 			EnchantmentSetup.setupDefaultEnchantments(registry, new Random());
 			
-			getCommand("ee").setExecutor(new EECommand());
+			new EECommand(this, "help", "guide", "list", "enchant", "disenchant");
 			
 			final int delay = cfg.getInt("effect-delay");
 			

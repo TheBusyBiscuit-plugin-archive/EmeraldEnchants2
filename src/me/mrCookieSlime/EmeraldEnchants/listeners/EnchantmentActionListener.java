@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -116,10 +117,10 @@ public class EnchantmentActionListener implements Listener {
 				}
 			}
 		}
-		else if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Arrow) {
-			Arrow arrow = (Arrow) ((EntityDamageByEntityEvent) e).getDamager();
-			if (arrow.hasMetadata("emeraldenchants")) {
-				for (ItemEnchantment enchantment: (List<ItemEnchantment>) arrow.getMetadata("emeraldenchants").get(0)) {
+		else if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Projectile) {
+			Projectile projectile = (Projectile) ((EntityDamageByEntityEvent) e).getDamager();
+			if (projectile.hasMetadata("emeraldenchants")) {
+				for (ItemEnchantment enchantment: (List<ItemEnchantment>) projectile.getMetadata("emeraldenchants").get(0)) {
 					for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
 						if (action instanceof ProjectileHitAction) ((ProjectileHitAction) action).onHit(enchantment.getLevel(), (EntityDamageByEntityEvent) e);
 					}

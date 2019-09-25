@@ -71,6 +71,7 @@ public final class EnchantmentSetup {
 		aliases.put(PotionEffectType.JUMP, "JUMP_BOOST");
 		aliases.put(PotionEffectType.SLOW, "SLOWNESS");
 		aliases.put(PotionEffectType.SLOW_DIGGING, "MINING_FATIGUE");
+		aliases.put(PotionEffectType.UNLUCK, "BAD_LUCK");
 		
 		registry.registerEnchantment("FARMER_SPIRIT", new ItemStack(Material.WHEAT_SEEDS), 1, Arrays.asList(ApplicableItem.BOOTS), Arrays.asList("Trampling Crops will never have", "to worry you again"),
 			new InteractAction() {
@@ -135,7 +136,7 @@ public final class EnchantmentSetup {
 			}
 		);
 		
-		registry.registerEnchantment("ICE_ASPECT", new ItemStack(Material.ICE), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Slows down and weakens your", "Enemies"), 
+		registry.registerEnchantment("ICE_ASPECT", new ItemStack(Material.ICE), 2, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE, ApplicableItem.BOW), Arrays.asList("Slows down and weakens your", "Enemies"), 
 			new HitAction() {
 				
 				@Override
@@ -151,6 +152,21 @@ public final class EnchantmentSetup {
 						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 0));
 					}
 				}
+			},
+			new ProjectileHitAction() {
+
+				@Override
+				public void onHit(int level, EntityDamageByEntityEvent e) {
+					if (!(e.getEntity() instanceof LivingEntity)) return;
+					if (level == 1) {
+						if (random.nextInt(10) < 4) ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 0));
+					}
+					else if (random.nextInt(10) < 5) {
+						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 0));
+						((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 0));
+					}
+				}
+				
 			}
 		);
 		
@@ -166,6 +182,26 @@ public final class EnchantmentSetup {
 						health = p.getMaxHealth();
 					}
 					p.setHealth(health);
+				}
+			}
+		);
+		
+		registry.registerEnchantment("XP_STEALER", new ItemStack(Material.EXPERIENCE_BOTTLE), 5, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("Steals a small bit of XP from Players you damage"), 
+			new HitAction() {
+				
+				@Override
+				public void onHit(int level, Player p, EntityDamageByEntityEvent e) {
+					if (!(e.getEntity() instanceof Player)) return;
+					Player victim = (Player) e.getEntity();
+					int xp = level * (10 + random.nextInt(50));
+					if (xp > victim.getTotalExperience() && victim.getTotalExperience() > 0) {
+						xp = victim.getTotalExperience();
+					}
+					
+					if (victim.getTotalExperience() >= xp) {
+						p.giveExp(xp);
+						victim.setTotalExperience(victim.getTotalExperience() - xp);
+					}
 				}
 			}
 		);
