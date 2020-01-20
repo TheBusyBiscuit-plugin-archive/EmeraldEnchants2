@@ -81,19 +81,25 @@ public class EnchantmentActionListener implements Listener {
 	public void onDig(BlockBreakEvent e) {
 		if (e instanceof IgnoredMiningEvent) return;
 		if (registry.isItemInvalid(e.getPlayer().getInventory().getItemInMainHand())) return;
+
 		List<ItemStack> comparison = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getInventory().getItemInMainHand());
 		List<ItemStack> drops = (List<ItemStack>) e.getBlock().getDrops(e.getPlayer().getInventory().getItemInMainHand());
 		
-		for (ItemEnchantment enchantment: registry.getEnchantments(e.getPlayer().getInventory().getItemInMainHand())) {
-			for (EnchantmentAction action: enchantment.getEnchantment().getActions()) {
-				if (action instanceof DigAction) ((DigAction) action).onDig(enchantment.getLevel(), e.getPlayer(), e.getBlock(), drops);
+		for (ItemEnchantment enchantment : registry.getEnchantments(e.getPlayer().getInventory().getItemInMainHand())) {
+			for (EnchantmentAction action : enchantment.getEnchantment().getActions()) {
+				if (action instanceof DigAction) {
+					((DigAction) action).onDig(enchantment.getLevel(), e.getPlayer(), e.getBlock(), drops);
+				}
 			}
 		}
 		
 		if (!comparison.equals(drops)) {
 			e.getBlock().setType(Material.AIR);
-			for (ItemStack drop: drops) {
-				e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), drop);
+
+			for (ItemStack drop : drops) {
+				if (drop != null && drop.getType() != Material.AIR) {
+					e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), drop);
+				}
 			}
 		}
 	}
