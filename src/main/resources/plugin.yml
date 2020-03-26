@@ -1,0 +1,23 @@
+name: EmeraldEnchants
+version: ${project.version}
+author: TheBusyBiscuit
+
+main: me.mrCookieSlime.EmeraldEnchants.EmeraldEnchants
+api-version: 1.14
+depend: [CS-CoreLib]
+
+commands:
+  ee:
+    description: EmeraldEnchants Base Command
+    usage: /ee
+
+permission:
+  EmeraldEnchants.command.enchant:
+    default: op
+    description: Allows you to do /ee enchant
+  EmeraldEnchants.command.disenchant:
+    default: op
+    description: Allows you to do /ee disenchant
+  EmeraldEnchants.command.list:
+    default: op
+    description: Allows you to do /ee list

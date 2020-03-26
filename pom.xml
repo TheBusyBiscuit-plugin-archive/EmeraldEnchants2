@@ -33,23 +33,15 @@
     </repositories>
 
     <build>
-    <!--Maintain existing structure (as much as possible)-->
-        <sourceDirectory>${project.basedir}/src</sourceDirectory>
-        <!--doesn't exist but here if you ever do make such a directory-->
-        <testSourceDirectory>${project.basedir}/tests/java</testSourceDirectory>
-        <testResources>
-          <testResource>
-            <directory>${project.basedir}/tests/resources</directory>
-          </testResource>
-        </testResources>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
         <finalName>${project.name}-${project.version}</finalName>
+        
         <resources>
             <resource>
-                <directory>${basedir}/src</directory>
+                <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>config.yml</include>
-                    <include>plugin.yml</include>
+                    <include>*</include>
                 </includes>
             </resource>
         </resources>
@@ -100,7 +92,7 @@
         <dependency>
            	<groupId>org.bukkit</groupId>
            	<artifactId>bukkit</artifactId>
-            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -110,21 +102,15 @@
             <scope>provided</scope>
 	    </dependency>
         <dependency>
-	    	<groupId>com.github.TheBusyBiscuit</groupId>
-	   		<artifactId>Slimefun4</artifactId>
-	   		<version>dcee66839f</version>
-            <scope>provided</scope>
-	    </dependency>
-        <dependency>
   			<groupId>com.github.thebusybiscuit</groupId>
   			<artifactId>CS-CoreLib2</artifactId>
-  			<version>0.8.8</version>
+  			<version>0.10</version>
   			<scope>compile</scope>
 		</dependency>
 		<dependency>
   			<groupId>org.bstats</groupId>
   			<artifactId>bstats-bukkit</artifactId>
-  			<version>1.6</version>
+  			<version>1.7</version>
   			<scope>compile</scope>
 		</dependency>
     </dependencies>

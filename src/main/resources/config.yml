@@ -1,0 +1,5 @@
+effect-delay: 10
+roman-numerals: true
+
+options:
+  auto-update: true
